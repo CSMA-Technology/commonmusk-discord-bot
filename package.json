@@ -1,0 +1,21 @@
+{
+  "name": "commonmusk-discord-bot",
+  "version": "0.0.1",
+  "description": "A bot that will integrate Discord channels with Trello and our custom ideation workflow",
+  "scripts": {
+    "start": "ts-node src/Bot.ts"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "discord.js": "^13.8.0",
+    "dotenv": "^16.0.1"
+  }
+}
