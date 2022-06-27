@@ -7,9 +7,9 @@ const authParams: string = `key=${process.env.TRELLO_KEY}&token=${process.env.TR
 
 export type Card = {
   id: string,
+  idList: string,
   name?: string,
   desc?: string,
-  idList: string,
 };
 
 /**
@@ -70,12 +70,11 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
 /**
  * Moves a card from one list (column) to another
  * @param cardId ID of the card to move
- * @param oldListId ID of the current list that the card is on
  * @param newListId ID of the new list for the card to be moved to
  * @returns The ID of the updated card
  */
-export const moveCard = async (cardId: string, oldListId: string, newListId: string): Promise<string> => {
-  const moveCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?idList${oldListId}&${authParams}`;
+export const moveCard = async (cardId: string, newListId: string): Promise<string> => {
+  const moveCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   const response = await fetch(moveCardUrl, {
     method: 'PUT',
     body: JSON.stringify({
@@ -96,14 +95,19 @@ export const moveCard = async (cardId: string, oldListId: string, newListId: str
 
 /**
  * Updates the data within a given card
- * @param cardData A Card type with the relevant card ID and list ID, plus data to be updated
+ * @param cardId The ID of the card to update
+ * @param name The value of the card's name to be updated
+ * @param desc The value of the card's description to be updated
  * @returns The ID of the updated card
  */
-export const updateCard = async (cardData: Card): Promise<string> => {
-  const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardData.id}?idList${cardData.idList}&${authParams}`;
+export const updateCard = async (cardId: string, name?: string, desc?: string): Promise<string> => {
+  const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   const response = await fetch(updateCardUrl, {
     method: 'PUT',
-    body: JSON.stringify(cardData),
+    body: JSON.stringify({
+      name,
+      desc,
+    }),
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
