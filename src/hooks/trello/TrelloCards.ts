@@ -12,6 +12,11 @@ export type Card = {
   idList: string,
 };
 
+/**
+ * Gets the data from a Trello Card
+ * @param cardId the ID of the card
+ * @returns Card type with the populated card data
+ */
 export const getCard = async (cardId: string): Promise<string | Card> => {
   const getCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   try {
@@ -43,6 +48,13 @@ export const getCard = async (cardId: string): Promise<string | Card> => {
   }
 };
 
+/**
+ * Creates and pushes a new Trello card to the given list
+ * @param name The card name/title
+ * @param desc The card description
+ * @param listId The ID of the list (column) to add the card to
+ * @returns The ID of the newly created card
+ */
 export const createCard = async (name: string, desc: string, listId: string): Promise<string> => {
   const createCardUrl: string = `${baseTrelloUrl}/cards?idList=${listId}&${authParams}`;
   try {
@@ -73,6 +85,13 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
   }
 };
 
+/**
+ * Moves a card from one list (column) to another
+ * @param cardId ID of the card to move
+ * @param oldListId ID of the current list that the card is on
+ * @param newListId ID of the new list for the card to be moved to
+ * @returns The ID of the updated card
+ */
 export const moveCard = async (cardId: string, oldListId: string, newListId: string): Promise<string> => {
   const moveCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?idList${oldListId}&${authParams}`;
   try {
@@ -102,6 +121,11 @@ export const moveCard = async (cardId: string, oldListId: string, newListId: str
   }
 };
 
+/**
+ * Updates the data within a given card
+ * @param cardData A Card type with the relevant card ID and list ID, plus data to be updated
+ * @returns The ID of the updated card
+ */
 export const updateCard = async (cardData: Card): Promise<string> => {
   const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardData.id}?idList${cardData.idList}&${authParams}`;
   try {
