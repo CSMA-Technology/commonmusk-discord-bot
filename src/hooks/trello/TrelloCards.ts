@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 const baseTrelloUrl: string = 'https://api.trello.com/1/';
 // TODO: find a better way to do the auth token generation -- for now since it's just us leaving this here
 // eslint-disable-next-line max-len
-const authParams: string = 'key=bd812a07b24d1217903e7e4c33e3b9b7&token=ead44e118483d1cff29439200deac604352af3afce7f6f1533576612e5355d61';
+const authParams: string = `key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}`;
 
 export type Card = {
   id: string,
@@ -17,35 +17,26 @@ export type Card = {
  * @param cardId the ID of the card
  * @returns Card type with the populated card data
  */
-export const getCard = async (cardId: string): Promise<string | Card> => {
+export const getCard = async (cardId: string): Promise<Card> => {
   const getCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
-  try {
-    const response = await fetch(getCardUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+  const response = await fetch(getCardUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error! status: ${response.status}`);
-    }
-    const responseJson = await response.json();
-    return ({
-      id: responseJson.id,
-      name: responseJson.name,
-      desc: responseJson.desc,
-      idList: responseJson.idList,
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log('error message: ', error.message);
-      return error.message;
-    }
-    console.log('unexpected error: ', error);
-    return 'An unexpected error occurred.';
+  if (!response.ok) {
+    throw new Error(`Error! status: ${response.status}`);
   }
+  const responseJson = await response.json();
+  return ({
+    id: responseJson.id,
+    name: responseJson.name,
+    desc: responseJson.desc,
+    idList: responseJson.idList,
+  });
 };
 
 /**
@@ -57,32 +48,23 @@ export const getCard = async (cardId: string): Promise<string | Card> => {
  */
 export const createCard = async (name: string, desc: string, listId: string): Promise<string> => {
   const createCardUrl: string = `${baseTrelloUrl}/cards?idList=${listId}&${authParams}`;
-  try {
-    const response = await fetch(createCardUrl, {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        desc,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+  const response = await fetch(createCardUrl, {
+    method: 'POST',
+    body: JSON.stringify({
+      name,
+      desc,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error! status: ${response.status}`);
-    }
-    const responseJson = await response.json();
-    return responseJson.id;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log('error message: ', error.message);
-      return error.message;
-    }
-    console.log('unexpected error: ', error);
-    return 'An unexpected error occurred.';
+  if (!response.ok) {
+    throw new Error(`Error! status: ${response.status}`);
   }
+  const responseJson = await response.json();
+  return responseJson.id;
 };
 
 /**
@@ -94,31 +76,22 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
  */
 export const moveCard = async (cardId: string, oldListId: string, newListId: string): Promise<string> => {
   const moveCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?idList${oldListId}&${authParams}`;
-  try {
-    const response = await fetch(moveCardUrl, {
-      method: 'PUT',
-      body: JSON.stringify({
-        idList: newListId,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+  const response = await fetch(moveCardUrl, {
+    method: 'PUT',
+    body: JSON.stringify({
+      idList: newListId,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error! status: ${response.status}`);
-    }
-    const responseJson = await response.json();
-    return responseJson.id;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log('error message: ', error.message);
-      return error.message;
-    }
-    console.log('unexpected error: ', error);
-    return 'An unexpected error occurred.';
+  if (!response.ok) {
+    throw new Error(`Error! status: ${response.status}`);
   }
+  const responseJson = await response.json();
+  return responseJson.id;
 };
 
 /**
@@ -128,27 +101,18 @@ export const moveCard = async (cardId: string, oldListId: string, newListId: str
  */
 export const updateCard = async (cardData: Card): Promise<string> => {
   const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardData.id}?idList${cardData.idList}&${authParams}`;
-  try {
-    const response = await fetch(updateCardUrl, {
-      method: 'PUT',
-      body: JSON.stringify(cardData),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
+  const response = await fetch(updateCardUrl, {
+    method: 'PUT',
+    body: JSON.stringify(cardData),
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`Error! status: ${response.status}`);
-    }
-    const responseJson = await response.json();
-    return responseJson.id;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.log('error message: ', error.message);
-      return error.message;
-    }
-    console.log('unexpected error: ', error);
-    return 'An unexpected error occurred.';
+  if (!response.ok) {
+    throw new Error(`Error! status: ${response.status}`);
   }
+  const responseJson = await response.json();
+  return responseJson.id;
 };
