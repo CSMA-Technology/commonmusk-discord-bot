@@ -7,17 +7,10 @@ const authParams: string = 'key=bd812a07b24d1217903e7e4c33e3b9b7&token=ead44e118
 
 export type Card = {
   id: string,
-  name: string,
-  desc: string,
+  name?: string,
+  desc?: string,
   idList: string,
 };
-
-const parseCardResponse = (id: string, name: string, desc: string, idList: string): Card => ({
-  id,
-  name,
-  desc,
-  idList,
-});
 
 export const getCard = async (cardId: string): Promise<string | Card> => {
   const getCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
@@ -34,7 +27,12 @@ export const getCard = async (cardId: string): Promise<string | Card> => {
       throw new Error(`Error! status: ${response.status}`);
     }
     const responseJson = await response.json();
-    return parseCardResponse(responseJson.id, responseJson.name, responseJson.desc, responseJson.idList);
+    return ({
+      id: responseJson.id,
+      name: responseJson.name,
+      desc: responseJson.desc,
+      idList: responseJson.idList,
+    });
   } catch (error) {
     if (error instanceof Error) {
       console.log('error message: ', error.message);
@@ -104,16 +102,12 @@ export const moveCard = async (cardId: string, oldListId: string, newListId: str
   }
 };
 
-// TODO: need to fix this for updating only the name or the description not both
-export const updateCard = async (cardId: string, listId: string, name?: string, desc?: string): Promise<string> => {
-  const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?idList${listId}&${authParams}`;
+export const updateCard = async (cardData: Card): Promise<string> => {
+  const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardData.id}?idList${cardData.idList}&${authParams}`;
   try {
     const response = await fetch(updateCardUrl, {
       method: 'PUT',
-      body: JSON.stringify({
-        name,
-        desc,
-      }),
+      body: JSON.stringify(cardData),
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
