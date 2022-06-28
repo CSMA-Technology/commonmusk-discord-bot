@@ -8,6 +8,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.0.0",
+    "@types/node-fetch": "^2.6.2",
     "eslint": "^8.18.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "discord.js": "^13.8.0",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "node-fetch": "^2.6.1"
   }
 }
