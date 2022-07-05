@@ -18,11 +18,11 @@ const CreateItem: Command = {
     const { value: trelloCardName } = <{ value: string }>interaction.options.get('name', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
     if (!channel.parentId || !channelMap.has(channel.parentId)) {
-      const message = `Error: No trello list is mapped for the parent channel: ${channel.parentId}`;
-      console.error(message);
+      const content = `Error: No trello list is mapped for the parent channel: ${channel.parentId}`;
+      console.error(content);
       return interaction.reply({
         ephemeral: true,
-        content: message,
+        content,
       });
     }
     await client.channels.fetch(channel.parentId);
