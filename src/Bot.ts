@@ -10,7 +10,7 @@ const token = process.env.DISCORD_TOKEN;
 
 console.log('Bot is starting...');
 
-console.log(`Initial config: ${JSON.stringify(serializeAppData())}`);
+console.log(`Initial appData: ${serializeAppData()}`);
 
 const client = new Client({
   intents: [],
