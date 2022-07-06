@@ -1,6 +1,6 @@
 import { ThreadChannel } from 'discord.js';
 import { createCard } from '../hooks/trello';
-import { linkMessageToTrelloCard, onlyRunInThread } from './utils';
+import { linkMessageToTrelloCard, onlyRunInThread, getPrettyCardData } from './utils';
 import { channelMap } from '../appData';
 
 const CreateItem: Command = {
@@ -28,10 +28,11 @@ const CreateItem: Command = {
     await client.channels.fetch(channel.parentId);
     const trelloListId = channelMap.get(channel.parentId)!;
     const starterMessage = await channel.fetchStarterMessage();
-    const cardId = await createCard(trelloCardName, starterMessage.content, trelloListId);
-    linkMessageToTrelloCard(starterMessage, cardId);
+    const card = await createCard(trelloCardName, starterMessage.content, trelloListId);
+    linkMessageToTrelloCard(starterMessage, card.id);
     return interaction.reply({
       content: 'Created a card in Trello to track this idea. Link details should be below.',
+      embeds: [getPrettyCardData(card)]
     });
   }),
 };

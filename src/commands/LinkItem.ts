@@ -1,5 +1,6 @@
 import { ThreadChannel } from 'discord.js';
-import { onlyRunInThread, linkMessageToTrelloCard } from './utils';
+import { onlyRunInThread, linkMessageToTrelloCard, getPrettyCardData } from './utils';
+import { getCard } from '../hooks/trello';
 
 const LinkItem: Command = {
   name: 'linkitem',
@@ -22,8 +23,10 @@ const LinkItem: Command = {
     const starterMessage = await channel.fetchStarterMessage();
     console.log(`starter message: ${starterMessage.content}`);
     await linkMessageToTrelloCard(starterMessage, cardId);
+    const cardData = await getCard(cardId); // TODO: is it annoying that this links the message and then also calls the api again should we call this somewhere else
     interaction.followUp({
       content: 'Done! Link comment should be below',
+      embeds: [getPrettyCardData(cardData)]
     });
   }),
 };

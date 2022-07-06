@@ -10,6 +10,7 @@ export type Card = {
   idList: string,
   name?: string,
   desc?: string,
+  shortUrl?: string,
 };
 
 /**
@@ -36,6 +37,7 @@ export const getCard = async (cardId: string): Promise<Card> => {
     name: responseJson.name,
     desc: responseJson.desc,
     idList: responseJson.idList,
+    shortUrl: responseJson.shortUrl,
   });
 };
 
@@ -46,7 +48,7 @@ export const getCard = async (cardId: string): Promise<Card> => {
  * @param listId The ID of the list (column) to add the card to
  * @returns The ID of the newly created card
  */
-export const createCard = async (name: string, desc: string, listId: string): Promise<string> => {
+export const createCard = async (name: string, desc: string, listId: string): Promise<Card> => {
   const createCardUrl: string = `${baseTrelloUrl}/cards?idList=${listId}&${authParams}`;
   const response = await fetch(createCardUrl, {
     method: 'POST',
@@ -64,7 +66,13 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
     throw new Error(`Error! status: ${response.status}`);
   }
   const responseJson = await response.json();
-  return responseJson.id;
+  return ({
+    id: responseJson.id,
+    name: responseJson.name,
+    desc: responseJson.desc,
+    idList: responseJson.idList,
+    shortUrl: responseJson.shortUrl,
+  })
 };
 
 /**
