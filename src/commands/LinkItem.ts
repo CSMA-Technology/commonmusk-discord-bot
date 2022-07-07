@@ -1,7 +1,8 @@
 import { ThreadChannel } from 'discord.js';
 import {
-  onlyRunInThread, linkMessageToTrelloCard, syncCardData,
+  onlyRunInThread, linkMessageToTrelloCard, getPrettyCardData,
 } from './utils';
+import { getCard } from '../hooks/trello';
 
 const LinkItem: Command = {
   name: 'linkitem',
@@ -24,10 +25,10 @@ const LinkItem: Command = {
     const starterMessage = await channel.fetchStarterMessage();
     console.log(`starter message: ${starterMessage.content}`);
     await linkMessageToTrelloCard(starterMessage, cardId);
-    const cardData = await syncCardData(client, channel, cardId);
+    const cardData = await getCard(cardId);
     interaction.followUp({
       content: 'Done! Link comment should be below',
-      embeds: [cardData],
+      embeds: [getPrettyCardData(cardData)],
     });
   }),
 };

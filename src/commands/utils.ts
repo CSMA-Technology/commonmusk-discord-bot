@@ -54,15 +54,12 @@ export const getPrettyCardData = (rawCardData: Card): Object => ({
 
 export const syncCardData = async (client: Client, channel: ThreadChannel, cardId: string): Promise<Object> => {
   // Get the latest card information
+  // TODO: If getting the latest card data fails skip the delete?
   const rawCardData = await getCard(cardId);
   // Delete the previous message from the bot with the card information
-  channel.messages.fetch()
-    .then((messages) => {
-      const botMessages = messages.filter((m) => m.author.id === client.user?.id);
-      const lastBotMessage = botMessages.first(); // TODO: or do we clear all the messages from the bot when we sync
-      if (lastBotMessage) lastBotMessage.delete();
-    })
-    .catch(console.error);
-  // Display the newest card information
+  const channelMessages = await channel.messages.fetch();
+  const botMessages = channelMessages.filter((m) => m.author.id === client.user?.id);
+  const lastBotMessage = botMessages.first();
+  if (lastBotMessage) await lastBotMessage.delete();
   return getPrettyCardData(rawCardData);
 };

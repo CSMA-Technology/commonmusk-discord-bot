@@ -1,6 +1,6 @@
 import { Client, ThreadChannel } from 'discord.js';
 import { customMetrics, messageMap } from '../appData';
-import { onlyRunInThread } from './utils';
+import { onlyRunInThread, syncCardData } from './utils';
 import { getCard, updateCard } from '../hooks/trello';
 
 const SetMetrics: Command = {
@@ -69,10 +69,11 @@ const SetMetrics: Command = {
 
     await updateCard(trelloCardId, undefined, newDescription);
 
-    const content = `Updated trello card ${trelloCardId} with: ${metricsBlock}`;
-    console.log(content);
+    console.log(`Updated trello card ${trelloCardId} with: ${metricsBlock}`);
+    const updatedCardData = await syncCardData(client, channel, trelloCardId);
     return interaction.followUp({
-      content,
+      content: 'This card has been updated!',
+      embeds: [updatedCardData],
     });
   }),
 };

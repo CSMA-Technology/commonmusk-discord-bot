@@ -1,7 +1,7 @@
 import { ThreadChannel } from 'discord.js';
 import { getCard, updateCard } from '../hooks/trello';
 import { messageMap } from '../appData';
-import { onlyRunInThread } from './utils';
+import { onlyRunInThread, syncCardData } from './utils';
 
 const AppendDescription: Command = {
   name: 'appenddescription',
@@ -32,10 +32,11 @@ const AppendDescription: Command = {
     const card = await getCard(cardId);
     const newDescription = `${card.desc}\n\n${addendum}`;
     await updateCard(cardId, undefined, newDescription);
-    const content = `Added the following to the description of card ID ${cardId}:\n${newDescription}`;
-    console.log(content);
+    console.log(`Added the following to the description of card ID ${cardId}:\n${newDescription}`);
+    const updatedCardData = await syncCardData(client, channel, cardId);
     return interaction.followUp({
-      content,
+      content: 'This card has been updated!',
+      embeds: [updatedCardData],
     });
   }),
 };
