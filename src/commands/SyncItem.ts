@@ -1,35 +1,31 @@
 import { ThreadChannel } from 'discord.js';
-import {
-  onlyRunInThread, linkMessageToTrelloCard, syncCardData,
-} from './utils';
+import { onlyRunInThread, syncCardData } from './utils';
 
-const LinkItem: Command = {
-  name: 'linkitem',
-  description: 'Links the current thread to an existing card in Trello',
+const SyncItem: Command = {
+  name: 'sync',
+  description: 'Syncs up & displays the card information between Trello & the discord thread.',
   options: [
     {
       name: 'cardid',
-      description: 'The ID of the Trello card this message should be linked to',
+      description: 'The ID of the Trello card that needs to be synced up',
       type: 'STRING',
       required: true,
     },
   ],
   run: onlyRunInThread(async (client, interaction) => {
     await interaction.deferReply({
-      ephemeral: true,
+      ephemeral: false,
     });
     const { value: cardId } = <{ value: string }>interaction.options.get('cardid', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
     await client.channels.fetch(channel.parentId!);
     const starterMessage = await channel.fetchStarterMessage();
     console.log(`starter message: ${starterMessage.content}`);
-    await linkMessageToTrelloCard(starterMessage, cardId);
     const cardData = await syncCardData(client, channel, cardId);
     interaction.followUp({
-      content: 'Done! Link comment should be below',
       embeds: [cardData],
     });
   }),
 };
 
-export default LinkItem;
+export default SyncItem;

@@ -72,7 +72,7 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
     desc: responseJson.desc,
     idList: responseJson.idList,
     shortUrl: responseJson.shortUrl,
-  })
+  });
 };
 
 /**

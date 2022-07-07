@@ -45,17 +45,26 @@ export const linkMessageToTrelloCard = async (message: Message, cardId: string) 
   console.log(`Created messageMap entry (${message.id}:${cardId})`);
 };
 
-const syncCardData = async (cardId: string) => {
-  // TODO: implement
-  console.log('not yet implemented');
+export const getPrettyCardData = (rawCardData: Card): Object => ({
+  color: 0x3d8482,
+  title: rawCardData.name,
+  fields: [{ name: 'description', value: rawCardData.desc }],
+  url: rawCardData.shortUrl,
+});
 
-}
-
-export const getPrettyCardData = (rawCardData: Card): Object => {
-  return ({
-    color: 0x3d8482,
-    title: rawCardData.name,
-    fields: [{name: 'description', value: rawCardData.desc}],
-    url: rawCardData.shortUrl,
-  });
-}
+export const syncCardData = async (client: Client, channel: ThreadChannel, cardId: string): Promise<Object> => {
+  // Get the latest card information
+  const rawCardData = await getCard(cardId);
+  // Delete the previous message from the bot with the card information
+  channel.messages.fetch()
+    .then((messages) => {
+      const botMessages = messages.filter((m) => m.author.id === client.user?.id);
+      if (botMessages.size > 1) { // TODO: or do we just want to clear all the messages from the bot when we sync
+        const lastBotMessage = botMessages.first();
+        if (lastBotMessage) lastBotMessage.delete();
+      }
+    })
+    .catch(console.error);
+  // Display the newest card information
+  return getPrettyCardData(rawCardData);
+};

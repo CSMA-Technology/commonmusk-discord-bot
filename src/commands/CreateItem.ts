@@ -32,7 +32,7 @@ const CreateItem: Command = {
     linkMessageToTrelloCard(starterMessage, card.id);
     return interaction.reply({
       content: 'Created a card in Trello to track this idea. Link details should be below.',
-      embeds: [getPrettyCardData(card)]
+      embeds: [getPrettyCardData(card)],
     });
   }),
 };
