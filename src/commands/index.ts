@@ -5,6 +5,18 @@ import AppendDescription from './AppendDescription';
 import SetMetrics from './SetMetrics';
 import LinkChannel from './LinkChannel';
 import ExplainYourself from './ExplainYourself';
+import CreateMetric from './CreateMetric';
+import DeleteMetric from './DeleteMetric';
 
 // Exported in an array because downstream the bot will use an array of commands
-export default [CreateItem, LinkItem, SetDescription, AppendDescription, SetMetrics, LinkChannel, ExplainYourself];
+export default [
+  CreateItem,
+  LinkItem,
+  SetDescription,
+  AppendDescription,
+  SetMetrics,
+  LinkChannel,
+  ExplainYourself,
+  CreateMetric,
+  DeleteMetric,
+];

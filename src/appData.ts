@@ -1,10 +1,18 @@
+import { ApplicationCommandOptionData } from 'discord.js';
 import { existsSync, PathLike, readFileSync } from 'fs';
 import { writeFile } from 'fs/promises';
 import path from 'node:path';
 
+type CustomMetric = ApplicationCommandOptionData & {
+  min?: number,
+  max?: number,
+  inverseValue?: boolean,
+};
+
 type AppData = {
   channelMap: Map<string, string>,
   messageMap: Map<string, string>,
+  customMetrics: CustomMetric[],
 };
 
 // The below functions are helpers for (de)serializing the map when writing the data file
@@ -28,7 +36,11 @@ const mapReviver = (key: string, value: any) => {
 };
 
 let saveFilePath = process.env.APP_DATA_PATH as PathLike;
-let appData: AppData = { channelMap: new Map<string, string>(), messageMap: new Map<string, string>() };
+let appData: AppData = {
+  channelMap: new Map<string, string>(),
+  messageMap: new Map<string, string>(),
+  customMetrics: [],
+};
 
 if (!saveFilePath) {
   saveFilePath = path.join(process.cwd(), 'data', 'appData.json');
@@ -65,4 +77,4 @@ export const writeAppData = async () => {
   console.log('Config succesfully written');
 };
 
-export const { channelMap, messageMap } = appData;
+export const { channelMap, messageMap, customMetrics } = appData;
