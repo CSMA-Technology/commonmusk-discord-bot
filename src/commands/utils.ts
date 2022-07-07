@@ -59,10 +59,8 @@ export const syncCardData = async (client: Client, channel: ThreadChannel, cardI
   channel.messages.fetch()
     .then((messages) => {
       const botMessages = messages.filter((m) => m.author.id === client.user?.id);
-      if (botMessages.size > 1) { // TODO: or do we just want to clear all the messages from the bot when we sync
-        const lastBotMessage = botMessages.first();
-        if (lastBotMessage) lastBotMessage.delete();
-      }
+      const lastBotMessage = botMessages.first(); // TODO: or do we clear all the messages from the bot when we sync
+      if (lastBotMessage) lastBotMessage.delete();
     })
     .catch(console.error);
   // Display the newest card information
