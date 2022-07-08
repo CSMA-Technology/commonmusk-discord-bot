@@ -67,8 +67,8 @@ export const syncCardData = async (channel: ThreadChannel, cardId: string) => {
   const rawCardData = await getCard(cardId);
   // Delete the previous message(s) from the bot with the card information
   const channelMessages = await channel.messages.fetch();
-  await channelMessages.filter((m) => m.content.includes(cardId));
-  await channelMessages.map((msg) => msg.delete());
+  channelMessages.filter((m) => m.content.includes(cardId));
+  channelMessages.map((msg) => msg.delete());
   // Display the most updated card info
   return getPrettyCardData(rawCardData);
 };
