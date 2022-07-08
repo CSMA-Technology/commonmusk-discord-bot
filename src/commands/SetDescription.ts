@@ -31,7 +31,7 @@ const SetDescription: Command = {
     await updateCard(cardId, undefined, description);
     console.log(`Trello card description for ${cardId} updated to:
     ${description}`);
-    const updatedCardData = await syncCardData(client, channel, cardId);
+    const updatedCardData = await syncCardData(channel, cardId);
     return interaction.reply({
       content: 'This card has been updated!',
       embeds: [updatedCardData],

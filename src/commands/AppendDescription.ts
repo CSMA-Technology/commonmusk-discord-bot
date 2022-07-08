@@ -33,7 +33,7 @@ const AppendDescription: Command = {
     const newDescription = `${card.desc}\n\n${addendum}`;
     await updateCard(cardId, undefined, newDescription);
     console.log(`Added the following to the description of card ID ${cardId}:\n${newDescription}`);
-    const updatedCardData = await syncCardData(client, channel, cardId);
+    const updatedCardData = await syncCardData(channel, cardId);
     return interaction.followUp({
       content: 'This card has been updated!',
       embeds: [updatedCardData],

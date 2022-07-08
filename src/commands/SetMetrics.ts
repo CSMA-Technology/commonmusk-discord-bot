@@ -70,7 +70,7 @@ const SetMetrics: Command = {
     await updateCard(trelloCardId, undefined, newDescription);
 
     console.log(`Updated trello card ${trelloCardId} with: ${metricsBlock}`);
-    const updatedCardData = await syncCardData(client, channel, trelloCardId);
+    const updatedCardData = await syncCardData(channel, trelloCardId);
     return interaction.followUp({
       content: 'This card has been updated!',
       embeds: [updatedCardData],

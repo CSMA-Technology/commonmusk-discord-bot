@@ -8,9 +8,9 @@ const authParams: string = `key=${process.env.TRELLO_KEY}&token=${process.env.TR
 export type Card = {
   id: string,
   idList: string,
-  name?: string,
-  desc?: string,
-  shortUrl?: string,
+  name: string,
+  desc: string,
+  shortUrl: string,
 };
 
 /**
