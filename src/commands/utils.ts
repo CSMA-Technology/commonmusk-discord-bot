@@ -49,16 +49,8 @@ export const getPrettyCardData = (rawCardData: Card) => ({
   color: 0x3d8482,
   title: rawCardData.name,
   url: rawCardData.shortUrl,
-  fields: [
-    {
-      name: 'id',
-      value: rawCardData.id,
-    },
-    {
-      name: 'description',
-      value: rawCardData.desc,
-    },
-  ],
+  description: rawCardData.id,
+  fields: [{ name: 'description', value: rawCardData.desc }],
 });
 
 export const syncCardData = async (channel: ThreadChannel, cardId: string) => {
@@ -67,8 +59,12 @@ export const syncCardData = async (channel: ThreadChannel, cardId: string) => {
   const rawCardData = await getCard(cardId);
   // Delete the previous message(s) from the bot with the card information
   const channelMessages = await channel.messages.fetch();
-  channelMessages.filter((m) => m.content.includes(cardId));
-  channelMessages.map((msg) => msg.delete());
+  channelMessages.forEach((msg) => {
+    const msgCardId = msg.embeds.at(0)?.description;
+    if (msgCardId && msgCardId.includes(cardId)) {
+      msg.delete();
+    }
+  });
   // Display the most updated card info
   return getPrettyCardData(rawCardData);
 };
