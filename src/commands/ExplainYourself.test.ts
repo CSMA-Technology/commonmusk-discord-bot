@@ -1,7 +1,7 @@
 import ExplainYourself from './ExplainYourself';
 import MockDiscord from '../testUtils/mockDiscord';
 
-describe('/explainyourself command', () => {
+describe('ExplainYourself', () => {
   it('should have the correct name property', () => {
     expect(ExplainYourself.name).toEqual('explainyourself');
   });
