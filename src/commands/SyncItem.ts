@@ -13,13 +13,11 @@ const SyncItem: Command = {
     },
   ],
   run: onlyRunInThread(async (client, interaction) => {
-    await interaction.deferReply({
-      ephemeral: false,
-    });
+    await interaction.deferReply();
     const { value: cardId } = <{ value: string }>interaction.options.get('cardid', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
     await client.channels.fetch(channel.parentId!);
-    const starterMessage = await channel.fetchStarterMessage();
+    await channel.fetchStarterMessage();
     const cardData = await syncCardData(channel, cardId);
     interaction.followUp({
       embeds: [cardData],
