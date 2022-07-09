@@ -20,7 +20,6 @@ const SyncItem: Command = {
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
     await client.channels.fetch(channel.parentId!);
     const starterMessage = await channel.fetchStarterMessage();
-    console.log(`starter message: ${starterMessage.content}`);
     const cardData = await syncCardData(channel, cardId);
     interaction.followUp({
       embeds: [cardData],
