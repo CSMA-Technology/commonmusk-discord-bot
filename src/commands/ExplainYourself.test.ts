@@ -12,8 +12,10 @@ describe('ExplainYourself', () => {
       await run(mockDiscord.getClient(), mockDiscord.getInteraction());
       const mockReply = mockDiscord.getInteraction().reply as jest.Mock;
       expect(mockReply).toHaveBeenCalledTimes(1);
-      expect(mockReply).toHaveBeenCalledWith({ content: expect.any(String) });
-      expect(mockReply.mock.calls[0][0].content.length).toBeGreaterThan(0);
+      expect(mockReply).toHaveBeenCalledWith(
+        { embeds: [{ color: expect.any(Number), title: expect.any(String), description: expect.any(String) }] },
+      );
+      expect(mockReply.mock.calls[0][0].embeds[0].description.length).toBeGreaterThan(0);
     });
   });
 });

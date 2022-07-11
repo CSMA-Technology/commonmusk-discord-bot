@@ -28,9 +28,7 @@ in the replies of that idea, I'll do the rest.
 const ExplainYourself: Command = {
   name: 'explainyourself',
   description: 'Explain the commonmusk workflow',
-  run: async (client, interaction) => {
-    await interaction.reply({ embeds: [helpText] });
-  },
+  run: (client, interaction) => interaction.reply({ embeds: [helpText] }),
 };
 
 export default ExplainYourself;

@@ -20,16 +20,18 @@ const SetDescription: Command = {
     const message = await getThreadStarterMessage(client, channel);
     if (!messageMap.has(message.id)) {
       const content = `Error: No Trello card is mapped to message with ID ${message.id}`;
-      console.error(message);
+      console.error(content);
       return interaction.reply({
         ephemeral: true,
         content,
       });
     }
     const cardId = messageMap.get(message.id)!;
+    console.log('Updating card');
     await updateCard(cardId, undefined, description);
     console.log(`Trello card description for ${cardId} updated to:
     ${description}`);
+    console.log('Syncing card');
     const updatedCardData = await syncCardData(channel, cardId);
     return interaction.reply({
       content: 'This card has been updated!',
