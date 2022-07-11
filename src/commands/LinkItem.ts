@@ -1,6 +1,6 @@
 import { ThreadChannel } from 'discord.js';
 import {
-  onlyRunInThread, linkMessageToTrelloCard, getPrettyCardData,
+  onlyRunInThread, linkMessageToTrelloCard, getPrettyCardData, getThreadStarterMessage,
 } from './utils';
 import { getCard } from '../hooks/trello';
 
@@ -21,8 +21,7 @@ const LinkItem: Command = {
     });
     const { value: cardId } = <{ value: string }>interaction.options.get('cardid', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
-    await client.channels.fetch(channel.parentId!);
-    const starterMessage = await channel.fetchStarterMessage();
+    const starterMessage = await getThreadStarterMessage(client, channel);
     console.log(`starter message: ${starterMessage.content}`);
     await linkMessageToTrelloCard(starterMessage, cardId);
     const cardData = await getCard(cardId);

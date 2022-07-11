@@ -1,6 +1,6 @@
 import { Client, ThreadChannel } from 'discord.js';
 import { customMetrics, messageMap } from '../appData';
-import { onlyRunInThread, syncCardData } from './utils';
+import { getThreadStarterMessage, onlyRunInThread, syncCardData } from './utils';
 import { getCard, updateCard } from '../hooks/trello';
 
 const SetMetrics: Command = {
@@ -39,8 +39,7 @@ const SetMetrics: Command = {
     }
 
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
-    await client.channels.fetch(channel.parentId!);
-    const { id: messageId } = await channel.fetchStarterMessage();
+    const { id: messageId } = await getThreadStarterMessage(client, channel);
     if (!messageMap.has(messageId)) {
       const content = 'Error: this message is not linked to a Trello card';
       console.error(content);

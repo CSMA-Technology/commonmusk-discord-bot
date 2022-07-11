@@ -21,6 +21,11 @@ export const onlyRunInThread = (runFunc: (client: Client, interaction: BaseComma
   }
 );
 
+export const getThreadStarterMessage = async (client: Client, channel: ThreadChannel) => {
+  await client.channels.fetch(channel.parentId!);
+  return channel.fetchStarterMessage();
+};
+
 export const onlyRunOutsideThread = (runFunc: (client: Client, interaction: BaseCommandInteraction) => void) => (
   async (client: Client, interaction: BaseCommandInteraction) => {
     if (!(await isInteractionInThread(client, interaction))) {

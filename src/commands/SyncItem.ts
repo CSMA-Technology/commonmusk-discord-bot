@@ -16,8 +16,6 @@ const SyncItem: Command = {
     await interaction.deferReply();
     const { value: cardId } = <{ value: string }>interaction.options.get('cardid', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
-    await client.channels.fetch(channel.parentId!);
-    await channel.fetchStarterMessage();
     const cardData = await syncCardData(channel, cardId);
     interaction.followUp({
       embeds: [cardData],
