@@ -7,6 +7,7 @@ import LinkChannel from './LinkChannel';
 import ExplainYourself from './ExplainYourself';
 import CreateMetric from './CreateMetric';
 import DeleteMetric from './DeleteMetric';
+import SyncItem from './SyncItem';
 
 // Exported in an array because downstream the bot will use an array of commands
 export default [
@@ -19,4 +20,5 @@ export default [
   ExplainYourself,
   CreateMetric,
   DeleteMetric,
+  SyncItem,
 ];

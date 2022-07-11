@@ -1,7 +1,7 @@
 import { ThreadChannel } from 'discord.js';
 import { getCard, updateCard } from '../hooks/trello';
 import { messageMap } from '../appData';
-import { onlyRunInThread } from './utils';
+import { getThreadStarterMessage, onlyRunInThread, syncCardData } from './utils';
 
 const AppendDescription: Command = {
   name: 'appenddescription',
@@ -17,8 +17,7 @@ const AppendDescription: Command = {
   run: onlyRunInThread(async (client, interaction) => {
     const { value: addendum } = <{ value: string }>interaction.options.get('addendum', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
-    await client.channels.fetch(channel.parentId!);
-    const message = await channel.fetchStarterMessage();
+    const message = await getThreadStarterMessage(client, channel);
     if (!messageMap.has(message.id)) {
       const content = `Error: No Trello card is mapped to message with ID ${message.id}`;
       console.error(message);
@@ -32,10 +31,11 @@ const AppendDescription: Command = {
     const card = await getCard(cardId);
     const newDescription = `${card.desc}\n\n${addendum}`;
     await updateCard(cardId, undefined, newDescription);
-    const content = `Added the following to the description of card ID ${cardId}:\n${newDescription}`;
-    console.log(content);
+    console.log(`Added the following to the description of card ID ${cardId}:\n${newDescription}`);
+    const updatedCardData = await syncCardData(channel, cardId);
     return interaction.followUp({
-      content,
+      content: 'This card has been updated!',
+      embeds: [updatedCardData],
     });
   }),
 };
