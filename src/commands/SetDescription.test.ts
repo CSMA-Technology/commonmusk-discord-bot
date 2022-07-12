@@ -1,30 +1,36 @@
 import {
-  Client, CommandInteraction, Guild, TextChannel, ThreadChannel,
+  Client, CommandInteraction, Guild, ThreadChannel,
 } from 'discord.js';
-import fetch from 'node-fetch';
 import SetDescription from './SetDescription';
 import MockDiscord from '../testUtils/mockDiscord';
-import { getThreadStarterMessage } from './utils';
+import { runInThread, runOutsideOfThread } from '../testUtils/helpers';
 import { messageMap } from '../appData';
+import { updateCard } from '../hooks/trello';
+import { getThreadStarterMessage, syncCardData } from './utils';
 
-jest.mock('../appData', () => {
-  console.log('We in the mock bitch');
-  return {
-    messageMap: new Map<string, string>(),
-  };
-});
+// Setting the types for the mocks
+const mockGetThreadStarterMessage = <jest.Mock>getThreadStarterMessage;
+const mockUpdateCard = <jest.Mock>updateCard;
+const mockSyncCardData = <jest.Mock>syncCardData;
+
+jest.mock('../appData', () => ({
+  messageMap: new Map<string, string>(),
+}));
 
 jest.mock('./utils', () => {
   const original = jest.requireActual('./utils');
-  console.log('Inside utils mock');
   return {
     __esModule: true,
     ...original,
     getThreadStarterMessage: jest.fn(),
+    syncCardData: jest.fn(),
   };
 });
 
-jest.mock('node-fetch');
+jest.mock('../hooks/trello', () => ({
+  esModule: true,
+  updateCard: jest.fn(),
+}));
 
 describe('SetDescription', () => {
   it('should have the correct name property', () => {
@@ -37,6 +43,7 @@ describe('SetDescription', () => {
     let client: Client;
     let guild: Guild;
     let mockReply: jest.Mock;
+
     beforeEach(() => {
       jest.clearAllMocks();
       mockDiscord = new MockDiscord({
@@ -48,7 +55,7 @@ describe('SetDescription', () => {
             {
               type: 3,
               name: 'description',
-              value: 'fuck you',
+              value: 'New test description',
             },
           ],
         },
@@ -58,29 +65,22 @@ describe('SetDescription', () => {
       guild = mockDiscord.getGuild();
       mockReply = interaction.reply as jest.Mock;
     });
-    it('should error when called outside of a thread', async () => {
-      interaction.channelId = '123';
-      const channel = Reflect.construct(TextChannel, [guild, {}, client]);
-      channel.id = '123';
-      client.channels.cache.set('123', channel);
 
-      await run(client, interaction);
+    it('should error when called outside of a thread', async () => {
+      await runOutsideOfThread(client, guild, interaction, run);
       expect(mockReply).toHaveBeenCalledTimes(1);
       expect(mockReply).toHaveBeenCalledWith({
         ephemeral: true,
         content: 'This command can only be used in a thread.',
       });
     });
+
     it('should error if the thread is not in the message map', async () => {
       const errorSpy = jest.spyOn(console, 'error').mockImplementationOnce(() => {});
-      interaction.channelId = '123';
-      const threadChannel = Reflect.construct(ThreadChannel, [guild]);
-      threadChannel.id = '123';
-      client.channels.cache.set('123', threadChannel);
+      mockGetThreadStarterMessage.mockImplementationOnce(() => ({ id: '234' }));
 
-      (<jest.Mock>getThreadStarterMessage).mockImplementationOnce(() => ({ id: '234' }));
+      await runInThread(client, guild, interaction, run);
 
-      await run(client, interaction);
       const content = 'Error: No Trello card is mapped to message with ID 234';
       expect(mockReply).toHaveBeenCalledTimes(1);
       expect(mockReply).toHaveBeenCalledWith({
@@ -90,6 +90,7 @@ describe('SetDescription', () => {
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy).toHaveBeenCalledWith(content);
     });
+
     it('should update the card if given a valid description', async () => {
       const mockCard = {
         id: 'card1',
@@ -97,33 +98,26 @@ describe('SetDescription', () => {
         shortUrl: 'test.com/card1',
         desc: 'this is a test',
       };
+      const updatedCard = { ...mockCard, desc: 'New test description' };
 
-      (<jest.Mock><unknown>fetch).mockImplementation(async () => ({
-        ok: true,
-        json: () => mockCard,
-      }));
-      (<jest.Mock>getThreadStarterMessage).mockImplementationOnce(() => ({ id: 'message1' }));
-
-      interaction.channelId = 'threadChannel1';
-      const threadChannel = Reflect.construct(ThreadChannel, [guild]);
-      threadChannel.id = 'threadChannel1';
-      client.channels.cache.set('threadChannel1', threadChannel);
-
+      mockGetThreadStarterMessage.mockImplementationOnce(() => ({ id: 'message1' }));
+      mockSyncCardData.mockImplementation(() => updatedCard);
       messageMap.set('message1', 'card1');
-      threadChannel.messages.fetch = () => [];
 
-      await run(client, interaction);
+      await runInThread(client, guild, interaction, run);
+
+      const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
+
+      expect(mockUpdateCard).toHaveBeenCalledTimes(1);
+      expect(mockUpdateCard).toHaveBeenCalledWith(mockCard.id, undefined, 'New test description');
+
+      expect(mockSyncCardData).toHaveBeenCalledTimes(1);
+      expect(mockSyncCardData).toHaveBeenCalledWith(channel, mockCard.id);
 
       expect(mockReply).toHaveBeenCalledTimes(1);
       expect(mockReply).toHaveBeenCalledWith({
         content: 'This card has been updated!',
-        embeds: [{
-          color: 0x3d8482,
-          title: mockCard.name,
-          url: mockCard.shortUrl,
-          description: mockCard.id,
-          fields: [{ name: 'description', value: mockCard.desc }],
-        }],
+        embeds: [updatedCard],
       });
     });
   });
