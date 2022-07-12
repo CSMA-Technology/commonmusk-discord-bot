@@ -20,7 +20,7 @@ const AppendDescription: Command = {
     const message = await getThreadStarterMessage(client, channel);
     if (!messageMap.has(message.id)) {
       const content = `Error: No Trello card is mapped to message with ID ${message.id}`;
-      console.error(message);
+      console.error(content);
       return interaction.reply({
         ephemeral: true,
         content,
@@ -31,7 +31,7 @@ const AppendDescription: Command = {
     const card = await getCard(cardId);
     const newDescription = `${card.desc}\n\n${addendum}`;
     await updateCard(cardId, undefined, newDescription);
-    console.log(`Added the following to the description of card ID ${cardId}:\n${newDescription}`);
+    console.log(`Added the following to the description of card ID ${cardId}:\n${addendum}`);
     const updatedCardData = await syncCardData(channel, cardId);
     return interaction.followUp({
       content: 'This card has been updated!',

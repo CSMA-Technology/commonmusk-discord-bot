@@ -372,6 +372,8 @@ export default class MockDiscord {
       },
     ]);
     this.interaction.reply = jest.fn();
+    this.interaction.deferReply = jest.fn();
+    this.interaction.followUp = jest.fn();
     this.interaction.guildId = this.guild.id;
     this.interaction.isCommand = jest.fn(() => true);
   }
