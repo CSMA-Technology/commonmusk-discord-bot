@@ -12,6 +12,8 @@ const mockUpdateCard = <jest.Mock>updateCard;
 const mockGetCard = <jest.Mock>getCard;
 const mockSyncCardData = <jest.Mock>syncCardData;
 
+jest.mock('../appData');
+
 jest.mock('../hooks/trello', () => ({
   esModule: true,
   updateCard: jest.fn(),

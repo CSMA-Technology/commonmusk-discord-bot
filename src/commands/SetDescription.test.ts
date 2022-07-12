@@ -13,6 +13,8 @@ const mockGetThreadStarterMessage = <jest.Mock>getThreadStarterMessage;
 const mockUpdateCard = <jest.Mock>updateCard;
 const mockSyncCardData = <jest.Mock>syncCardData;
 
+jest.mock('../appData');
+
 jest.mock('./utils', () => {
   const original = jest.requireActual('./utils');
   return {

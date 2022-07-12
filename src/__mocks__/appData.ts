@@ -15,3 +15,5 @@ export const channelMap = new Map<string, string>();
 export const messageMap = new Map<string, string>();
 
 export const customMetrics: CustomMetric[] = [];
+
+console.log('Loaded appData mock');
