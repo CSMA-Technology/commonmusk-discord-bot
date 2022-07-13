@@ -40,11 +40,6 @@ export const onlyRunOutsideThread = (runFunc: (client: Client, interaction: Base
 
 export const linkMessageToTrelloCard = async (message: Message, cardId: string) => {
   console.log(`Linking discord message:trello card id: ${message.id}:${cardId}`);
-  let { thread } = message;
-  if (!thread) {
-    console.log('Message has no thread, creating one');
-    thread = await message.startThread({ name: message.content });
-  }
   messageMap.set(message.id, cardId);
   writeAppData();
   console.log(`Created messageMap entry (${message.id}:${cardId})`);

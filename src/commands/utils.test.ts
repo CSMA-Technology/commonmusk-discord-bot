@@ -3,13 +3,7 @@ import MockDiscord from '../testUtils/mockDiscord';
 import { messageMap, writeAppData } from '../appData';
 import { getPrettyCardData, linkMessageToTrelloCard } from './utils';
 
-// Setting the types for the mocks
-const mockWriteAppData = <jest.Mock>writeAppData;
-
-jest.mock('../appData', () => ({
-  messageMap: new Map<string, string>(),
-  writeAppData: jest.fn(),
-}));
+jest.mock('../appData');
 
 describe('utils', () => {
   describe('linking message to trello card', () => {
@@ -33,7 +27,7 @@ describe('utils', () => {
       const newMessage = { ...mockMessage, thread: threadChannel } as Message;
 
       await linkMessageToTrelloCard(newMessage, mockCardId);
-      expect(mockWriteAppData).toBeCalledTimes(1);
+      expect(writeAppData).toBeCalledTimes(1);
       expect(messageMap).toEqual(new Map().set(mockMessage.id, mockCardId));
     });
   });
