@@ -1,28 +1,49 @@
-import { Message, ThreadChannel } from 'discord.js';
+import {
+  Client, Collection, CommandInteraction, Guild, Message, MessageEmbed, ThreadChannel,
+} from 'discord.js';
+import { getCard } from '../hooks/trello';
+import { createThreadChannel } from '../testUtils/helpers';
 import MockDiscord from '../testUtils/mockDiscord';
 import { messageMap, writeAppData } from '../appData';
-import { getPrettyCardData, linkMessageToTrelloCard } from './utils';
+import { getPrettyCardData, linkMessageToTrelloCard, syncCardData } from './utils';
+
+const mockGetCard = <jest.Mock>getCard;
 
 jest.mock('../appData');
 
-describe('utils', () => {
-  describe('linking message to trello card', () => {
-    let mockDiscord: MockDiscord;
-    let mockMessage: Message;
+jest.mock('../hooks/trello', () => ({
+  esModule: true,
+  getCard: jest.fn(),
+}));
 
-    beforeEach(() => {
-      jest.clearAllMocks();
-      mockDiscord = new MockDiscord({
-        message: {
-          content: 'test',
-        },
-      });
-      mockMessage = mockDiscord.getMessage();
+describe('utils', () => {
+  let mockDiscord: MockDiscord;
+  let mockMessage: Message;
+  let guild: Guild;
+  let interaction: CommandInteraction;
+  let client: Client;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockDiscord = new MockDiscord({
+      message: {
+        content: 'test',
+      },
+      command: {
+        id: 'command',
+        name: 'somecommand',
+        type: 1,
+      },
     });
-    it('should link the message with existing thread', async () => {
+    mockMessage = mockDiscord.getMessage();
+    guild = mockDiscord.getGuild();
+    interaction = mockDiscord.getInteraction();
+    client = mockDiscord.getClient();
+  });
+  describe('linking message to trello card', () => {
+    it('should link the message with an existing thread', async () => {
       const mockCardId = 'card1';
 
-      const threadChannel = Reflect.construct(ThreadChannel, [mockDiscord.getGuild()]);
+      const threadChannel = Reflect.construct(ThreadChannel, [guild]);
       threadChannel.id = 'ThreadChannel1';
       const newMessage = { ...mockMessage, thread: threadChannel } as Message;
 
@@ -48,6 +69,57 @@ describe('utils', () => {
         url: 'trello.com/card1',
         description: 'card1',
         fields: [{ name: 'description', value: 'card description' }],
+      });
+    });
+  });
+
+  describe('sync card data', () => {
+    it('should get the latest card and delete the previous message', async () => {
+      const mockOriginalCard = {
+        id: 'card1',
+        name: 'original card name',
+        desc: 'original card description',
+        shortUrl: 'trello.com/card1',
+        idList: 'list1',
+      };
+
+      const mockUpdatedCard = {
+        id: 'card1',
+        name: 'new card name',
+        desc: 'new card description',
+        shortUrl: 'trello.com/card1',
+        idList: 'list1',
+      };
+      mockGetCard.mockImplementationOnce(() => mockUpdatedCard);
+
+      const threadChannel = createThreadChannel(client, guild, interaction);
+      mockMessage.embeds = [getPrettyCardData(mockOriginalCard) as MessageEmbed];
+
+      // mock the channel having one previous message about the card
+      const threadChannelMessages = new Collection<String, Message>();
+      threadChannelMessages.set(mockMessage.id, mockMessage);
+
+      // fetching channel messages gets this collection
+      jest.spyOn(threadChannel.messages, 'fetch')
+        .mockImplementation(() => threadChannelMessages);
+
+      // deleting channel messages deletes from this collection
+      jest.spyOn(mockMessage, 'delete').mockImplementation(() => {
+        threadChannelMessages.delete(mockMessage.id);
+        return Promise.resolve(mockMessage);
+      });
+
+      const channelMessages = await threadChannel.messages.fetch();
+      expect(channelMessages.size).toEqual(1);
+
+      const updatedCardData = await syncCardData(threadChannel, 'card1');
+      expect(channelMessages.size).toEqual(0);
+      expect(updatedCardData).toEqual({
+        color: 0x3d8482,
+        title: 'new card name',
+        url: 'trello.com/card1',
+        description: 'card1',
+        fields: [{ name: 'description', value: 'new card description' }],
       });
     });
   });
