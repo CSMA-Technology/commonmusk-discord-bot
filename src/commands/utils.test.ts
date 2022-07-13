@@ -5,7 +5,7 @@ import { getCard } from '../hooks/trello';
 import { createThreadChannel } from '../testUtils/helpers';
 import MockDiscord from '../testUtils/mockDiscord';
 import { messageMap, writeAppData } from '../appData';
-import { getPrettyCardData, linkMessageToTrelloCard, syncCardData } from './utils';
+import { getPrettyCardData, getThreadStarterMessage, linkMessageToTrelloCard, syncCardData } from './utils';
 
 const mockGetCard = <jest.Mock>getCard;
 
@@ -39,6 +39,24 @@ describe('utils', () => {
     interaction = mockDiscord.getInteraction();
     client = mockDiscord.getClient();
   });
+
+  describe('get thread starter message', () => {
+    it('should get the message that started the thread', async () => {
+      const threadChannel = createThreadChannel(client, guild, interaction, { threadParentId: mockMessage.id });
+
+      const fetchSpy = jest.spyOn(client.channels, 'fetch').mockImplementationOnce(() => threadChannel);
+      const fetchStarterMessageSpy = jest.spyOn(threadChannel, 'fetchStarterMessage')
+        .mockImplementationOnce(() => mockMessage);
+
+      const message = await getThreadStarterMessage(client, threadChannel);
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith(mockMessage.id);
+      expect(fetchStarterMessageSpy).toHaveBeenCalledTimes(1);
+      expect(message).toEqual(mockMessage);
+    });
+  });
+
   describe('linking message to trello card', () => {
     it('should link the message with an existing thread', async () => {
       const mockCardId = 'card1';
@@ -47,7 +65,7 @@ describe('utils', () => {
       threadChannel.id = 'ThreadChannel1';
       const newMessage = { ...mockMessage, thread: threadChannel } as Message;
 
-      await linkMessageToTrelloCard(newMessage, mockCardId);
+      linkMessageToTrelloCard(newMessage, mockCardId);
       expect(writeAppData).toBeCalledTimes(1);
       expect(messageMap).toEqual(new Map().set(mockMessage.id, mockCardId));
     });
@@ -104,7 +122,7 @@ describe('utils', () => {
         .mockImplementation(() => threadChannelMessages);
 
       // deleting channel messages deletes from this collection
-      jest.spyOn(mockMessage, 'delete').mockImplementation(() => {
+      const deleteSpy = jest.spyOn(mockMessage, 'delete').mockImplementationOnce(() => {
         threadChannelMessages.delete(mockMessage.id);
         return Promise.resolve(mockMessage);
       });
@@ -113,6 +131,7 @@ describe('utils', () => {
       expect(channelMessages.size).toEqual(1);
 
       const updatedCardData = await syncCardData(threadChannel, 'card1');
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
       expect(channelMessages.size).toEqual(0);
       expect(updatedCardData).toEqual({
         color: 0x3d8482,
