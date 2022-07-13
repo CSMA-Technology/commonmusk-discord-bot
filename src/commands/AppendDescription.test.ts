@@ -1,16 +1,15 @@
 import { Client, CommandInteraction, Guild } from 'discord.js';
 import { messageMap } from '../appData';
 import MockDiscord from '../testUtils/mockDiscord';
-import { runOutsideOfThread, runInThread } from '../testUtils/helpers';
+import { runOutsideOfThread, runInThread, convertToMock } from '../testUtils/helpers';
 import AppendDescription from './AppendDescription';
 import { getThreadStarterMessage, syncCardData } from './utils';
 import { updateCard, getCard } from '../hooks/trello';
 
 // Setting the type for mocks
-const mockGetThreadStarterMessage = <jest.Mock>getThreadStarterMessage;
-const mockUpdateCard = <jest.Mock>updateCard;
-const mockGetCard = <jest.Mock>getCard;
-const mockSyncCardData = <jest.Mock>syncCardData;
+const [mockGetThreadStarterMessage, mockUpdateCard, mockGetCard, mockSyncCardData] = convertToMock(
+  [getThreadStarterMessage, updateCard, getCard, syncCardData],
+);
 
 jest.mock('../appData');
 

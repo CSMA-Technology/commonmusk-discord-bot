@@ -33,12 +33,12 @@ export const onlyRunOutsideThread = (runFunc: (client: Client, interaction: Base
     }
     return interaction.reply({
       ephemeral: true,
-      content: 'This command can only be used in the top level of a channel',
+      content: 'This command can only be used in the top level of a channel.',
     });
   }
 );
 
-export const linkMessageToTrelloCard = async (message: Message, cardId: string) => {
+export const linkMessageToTrelloCard = (message: Message, cardId: string) => {
   console.log(`Linking discord message:trello card id: ${message.id}:${cardId}`);
   messageMap.set(message.id, cardId);
   writeAppData();

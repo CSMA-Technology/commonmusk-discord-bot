@@ -3,32 +3,21 @@ import {
 } from 'discord.js';
 import SetDescription from './SetDescription';
 import MockDiscord from '../testUtils/mockDiscord';
-import { runInThread, runOutsideOfThread } from '../testUtils/helpers';
+import { runInThread, runOutsideOfThread, convertToMock } from '../testUtils/helpers';
 import { messageMap } from '../appData';
 import { updateCard } from '../hooks/trello';
 import { getThreadStarterMessage, syncCardData } from './utils';
 
 // Setting the types for the mocks
-const mockGetThreadStarterMessage = <jest.Mock>getThreadStarterMessage;
-const mockUpdateCard = <jest.Mock>updateCard;
-const mockSyncCardData = <jest.Mock>syncCardData;
+const [mockGetThreadStarterMessage, mockUpdateCard, mockSyncCardData] = convertToMock(
+  [getThreadStarterMessage, updateCard, syncCardData],
+);
 
 jest.mock('../appData');
 
-jest.mock('./utils', () => {
-  const original = jest.requireActual('./utils');
-  return {
-    __esModule: true,
-    ...original,
-    getThreadStarterMessage: jest.fn(),
-    syncCardData: jest.fn(),
-  };
-});
+jest.mock('./utils');
 
-jest.mock('../hooks/trello', () => ({
-  esModule: true,
-  updateCard: jest.fn(),
-}));
+jest.mock('../hooks/trello');
 
 describe('SetDescription', () => {
   it('should have the correct name property', () => {

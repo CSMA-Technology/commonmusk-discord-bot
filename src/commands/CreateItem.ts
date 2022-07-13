@@ -30,7 +30,7 @@ const CreateItem: Command = {
     const starterMessage = await getThreadStarterMessage(client, channel);
     const trelloListId = channelMap.get(channel.parentId)!;
     const card = await createCard(trelloCardName, starterMessage.content, trelloListId);
-    linkMessageToTrelloCard(starterMessage, card.id);
+    await linkMessageToTrelloCard(starterMessage, card.id);
     return interaction.reply({
       content: 'Created a card in Trello to track this idea. Link details should be below.',
       embeds: [getPrettyCardData(card)],

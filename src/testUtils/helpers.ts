@@ -3,9 +3,16 @@ import {
   Client, CommandInteraction, Guild, TextChannel, ThreadChannel,
 } from 'discord.js';
 
-export const runInThread = (client: Client, guild: Guild, interaction: CommandInteraction, run: CommandRunFunc) => {
+export const runInThread = (
+  client: Client,
+  guild: Guild,
+  interaction: CommandInteraction,
+  run: CommandRunFunc,
+  options?: { threadParentId: string },
+) => {
   const threadChannel = Reflect.construct(ThreadChannel, [guild]);
   threadChannel.id = 'ThreadChannel1';
+  threadChannel.parentId = options?.threadParentId;
   client.channels.cache.set(threadChannel.id, threadChannel);
   interaction.channelId = threadChannel.id;
   return run(client, interaction);
@@ -23,3 +30,5 @@ export const runOutsideOfThread = (
   interaction.channelId = channel.id;
   return run(client, interaction);
 };
+
+export const convertToMock = (funcs: Function[]) => funcs.map((f) => <jest.Mock>f);
