@@ -5,7 +5,9 @@ import { getCard } from '../hooks/trello';
 import { createThreadChannel } from '../testUtils/helpers';
 import MockDiscord from '../testUtils/mockDiscord';
 import { messageMap, writeAppData } from '../appData';
-import { getPrettyCardData, getThreadStarterMessage, linkMessageToTrelloCard, syncCardData } from './utils';
+import {
+  getPrettyCardData, getThreadStarterMessage, linkMessageToTrelloCard, syncCardData,
+} from './utils';
 
 const mockGetCard = <jest.Mock>getCard;
 
