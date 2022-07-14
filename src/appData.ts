@@ -69,11 +69,8 @@ export const serializeAppData = () => JSON.stringify(appData, mapReplacer);
  * Should be hidden soon, for now needs to be manually called
  */
 export const writeAppData = async () => {
-  if (!saveFilePath) {
-    console.error('Cannot write config, no CONFIG_PATH environment variable given');
-  }
   console.log(`Writing config to ${saveFilePath}`);
-  await writeFile(saveFilePath, JSON.stringify(appData, mapReplacer));
+  await writeFile(saveFilePath, serializeAppData());
   console.log('Config succesfully written');
 };
 
