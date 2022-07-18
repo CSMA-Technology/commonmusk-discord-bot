@@ -16,9 +16,7 @@ const LinkItem: Command = {
     },
   ],
   run: onlyRunInThread(async (client, interaction) => {
-    await interaction.deferReply({
-      ephemeral: true,
-    });
+    await interaction.deferReply();
     const { value: cardId } = <{ value: string }>interaction.options.get('cardid', true);
     const channel = await client.channels.fetch(interaction.channelId) as ThreadChannel;
     const starterMessage = await getThreadStarterMessage(client, channel);
@@ -26,7 +24,7 @@ const LinkItem: Command = {
     await linkMessageToTrelloCard(starterMessage, cardId);
     const cardData = await getCard(cardId);
     interaction.followUp({
-      content: 'Done! Link comment should be below',
+      content: 'Linked this message to the card below.',
       embeds: [getPrettyCardData(cardData)],
     });
   }),

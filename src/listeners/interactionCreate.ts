@@ -5,7 +5,7 @@ const handleSlashCommand = async (client: Client, interaction: BaseCommandIntera
   const slashCommand = Commands.find((c) => c.name === interaction.commandName);
   if (!slashCommand) {
     console.error(`Error: No command ${interaction.commandName} found for this bot!`);
-    interaction.followUp({ content: 'An error has occurred. This command was not found.' });
+    interaction.reply({ content: 'An error has occurred. This command was not found.' });
     return;
   }
   console.log(`Executing run function for ${slashCommand.name}`);

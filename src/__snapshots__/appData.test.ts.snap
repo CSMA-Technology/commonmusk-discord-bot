@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`appData writeAppData should serialize and write the config 1`] = `
+Array [
+  "/workspaces/commonmusk-discord-bot/data/appData.json",
+  "{\\"channelMap\\":{\\"dataType\\":\\"Map\\",\\"value\\":[[\\"testChannel\\",\\"testList\\"]]},\\"messageMap\\":{\\"dataType\\":\\"Map\\",\\"value\\":[[\\"testMessage\\",\\"testCard\\"]]},\\"customMetrics\\":[{\\"name\\":\\"testMetric\\",\\"description\\":\\"just a test\\",\\"type\\":\\"INTEGER\\"}]}",
+]
+`;

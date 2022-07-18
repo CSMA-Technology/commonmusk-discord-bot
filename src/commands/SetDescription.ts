@@ -20,7 +20,7 @@ const SetDescription: Command = {
     const message = await getThreadStarterMessage(client, channel);
     if (!messageMap.has(message.id)) {
       const content = `Error: No Trello card is mapped to message with ID ${message.id}`;
-      console.error(message);
+      console.error(content);
       return interaction.reply({
         ephemeral: true,
         content,

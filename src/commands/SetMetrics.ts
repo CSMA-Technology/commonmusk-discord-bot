@@ -1,4 +1,4 @@
-import { Client, ThreadChannel } from 'discord.js';
+import { Client, CommandInteractionOption, ThreadChannel } from 'discord.js';
 import { customMetrics, messageMap } from '../appData';
 import { getThreadStarterMessage, onlyRunInThread, syncCardData } from './utils';
 import { getCard, updateCard } from '../hooks/trello';
@@ -8,8 +8,7 @@ const SetMetrics: Command = {
   description: 'Sets the custom metrics for a card',
   options: customMetrics,
   run: onlyRunInThread(async (client, interaction) => {
-    const options = <{ name: string, value: number }[]>interaction.options.data
-      .filter(({ value }) => Number.isInteger(value));
+    const options = <(CommandInteractionOption & { value: Number })[]>interaction.options.data;
 
     if (!options.length) {
       const content = 'Error: Must pass at least one metric';
@@ -24,13 +23,13 @@ const SetMetrics: Command = {
       const definition = customMetrics.find((c) => c.name === name);
       if (!definition) return `No metric definition exists for ${name}`;
       const { min, max } = definition;
-      if ((min && value < min) || (max && value > max)) {
+      if ((min !== undefined && value < min) || (max !== undefined && value > max)) {
         return `Value for ${name} must be at least ${min} and at most ${max}`;
       }
       return null;
     }).filter((e) => e);
     if (optionErrors.length) {
-      const content = `Error(s):\n${optionErrors.map((e) => `\n${e}`)}`;
+      const content = `Error(s):${optionErrors.map((e) => `\n${e}`)}`;
       console.error(content);
       return interaction.reply({
         ephemeral: true,
@@ -52,7 +51,7 @@ const SetMetrics: Command = {
     await interaction.deferReply();
 
     const trelloCardId = messageMap.get(messageId)!;
-    const { desc = '' } = await getCard(trelloCardId);
+    const { desc } = await getCard(trelloCardId);
 
     const metricsRegex = /^metrics:\n(?:\w+:\s*\d+\n{0,1})+/mig;
     let newDescription = desc;
@@ -62,7 +61,8 @@ const SetMetrics: Command = {
 
     if (!newDescription.endsWith('\n')) newDescription += '\n';
 
-    const metricsBlock = `\nMetrics:${options.map((option) => `\n${option.name}: ${option.value}`)}`.replace(',', '');
+    const metricsBlock = `\nMetrics:${options.map((option) => `\n${option.name}: ${option.value}`)}`
+      .replaceAll(',', '');
 
     newDescription = `${newDescription}${metricsBlock}`;
 

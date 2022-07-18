@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const baseTrelloUrl: string = 'https://api.trello.com/1/';
+const baseTrelloUrl: string = 'https://api.trello.com/1';
 // TODO: find a better way to do the auth token generation -- for now since it's just us leaving this here
 // eslint-disable-next-line max-len
 const authParams: string = `key=${process.env.TRELLO_KEY}&token=${process.env.TRELLO_TOKEN}`;
@@ -18,8 +18,8 @@ export type Card = {
  * @param cardId the ID of the card
  * @returns Card type with the populated card data
  */
-export const getCard = async (cardId: string): Promise<Card> => {
-  const getCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
+export const getCard = async (cardId: string) => {
+  const getCardUrl = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   const response = await fetch(getCardUrl, {
     method: 'GET',
     headers: {
@@ -48,8 +48,8 @@ export const getCard = async (cardId: string): Promise<Card> => {
  * @param listId The ID of the list (column) to add the card to
  * @returns The ID of the newly created card
  */
-export const createCard = async (name: string, desc: string, listId: string): Promise<Card> => {
-  const createCardUrl: string = `${baseTrelloUrl}/cards?idList=${listId}&${authParams}`;
+export const createCard = async (name: string, desc: string, listId: string) => {
+  const createCardUrl = `${baseTrelloUrl}/cards?idList=${listId}&${authParams}`;
   const response = await fetch(createCardUrl, {
     method: 'POST',
     body: JSON.stringify({
@@ -81,8 +81,8 @@ export const createCard = async (name: string, desc: string, listId: string): Pr
  * @param newListId ID of the new list for the card to be moved to
  * @returns The ID of the updated card
  */
-export const moveCard = async (cardId: string, newListId: string): Promise<string> => {
-  const moveCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
+export const moveCard = async (cardId: string, newListId: string) => {
+  const moveCardUrl = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   const response = await fetch(moveCardUrl, {
     method: 'PUT',
     body: JSON.stringify({
@@ -108,8 +108,8 @@ export const moveCard = async (cardId: string, newListId: string): Promise<strin
  * @param desc The value of the card's description to be updated
  * @returns The ID of the updated card
  */
-export const updateCard = async (cardId: string, name?: string, desc?: string): Promise<string> => {
-  const updateCardUrl: string = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
+export const updateCard = async (cardId: string, name?: string, desc?: string) => {
+  const updateCardUrl = `${baseTrelloUrl}/cards/${cardId}?${authParams}`;
   const response = await fetch(updateCardUrl, {
     method: 'PUT',
     body: JSON.stringify({
