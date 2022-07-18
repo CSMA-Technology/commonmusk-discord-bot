@@ -80,7 +80,7 @@ describe('CreateItem', () => {
       });
     });
 
-    describe('succesful cases', () => {
+    describe('successful cases', () => {
       const listId = 'list1';
 
       const mockCard = {
