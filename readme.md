@@ -11,4 +11,4 @@ This repo includes a `Dockerfile` that will be used to deploy the bot in product
 * Along with the source code, the docker build will copy over the `data` folder and `.env` file to the container
 * We currently hsve no synchronization between bots, so only one instance should be run at a time
 
-In order to deploy the bot, just clone this repo, populate the `.env` file accordingly, and run `docker build commonmusk-discord:<tag>` where `<tag>` is a tag such as `latest` or `test`. Then run `docker run -d commonmusk-discord:<tag>`
+In order to deploy the bot, just clone this repo, populate the `.env` file accordingly, and run `docker build -t commonmusk-discord:<tag> .` where `<tag>` is a tag such as `latest` or `test`. Then run `docker run -d commonmusk-discord:<tag>`
