@@ -3,12 +3,14 @@
 ## About the Project
 
 ### Overview
-This is the first implementation of the eventual *commonmusk* library. This is a Discord bot that facilitates the idea grooming and task creation workflow of CSMA.
+This is the first implementation of the eventual *commonmusk* library. This is a Discord bot that facilitates the idea grooming and task creation workflow of CSMA in Trello.
 
 The eventual vision for this platform is to create a centralized bot orchestrator that allows many different productivity platforms to connect with each other and automates workflows for users. 
 
 ### Built With
-This bot is written in [Typescript](https://www.typescriptlang.org/), and uses the [Discord.js](https://discord.js.org/#/) Node module.
+* This bot is written in [Typescript](https://www.typescriptlang.org/).
+* It uses the [Discord.js](https://discord.js.org/#/) Node module for all Discord functionality.
+* It is integrated with the [Trello API](https://developer.atlassian.com/cloud/trello/rest/api-group-actions/) for all Trello functionality.
 
 ## Usage
 **How to use the Commonmusk Discord Bot**
@@ -51,7 +53,14 @@ code .
 
 4. Run `npm install` to install all the necessary packages in your container.
 
-5. Run `npm start` to start the bot, and use the commands above!
+5. Create a `.env` file at the top level of the file structure. It should have the following structure (replace the placeholders here with your own tokens).
+```
+DISCORD_TOKEN=your_discord_token
+TRELLO_TOKEN=your_trello_token
+TRELLO_KEY=your_trello_key
+```
+
+6. Run `npm start` to start the bot, and use the commands above!
 
 ## Deployment
 This repo includes a `Dockerfile` that will be used to deploy the bot in production. Some important things to note:
